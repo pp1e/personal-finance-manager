@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -19,6 +20,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+//        ksp {
+//            arguments {arg("room.schemaLocation", "$projectDir/schemas")}
+//        }
     }
 
     buildTypes {
@@ -57,6 +62,11 @@ dependencies {
     implementation(libs.bundles.decompose)
     implementation(libs.bundles.mvikotlin)
     implementation(libs.bundles.reactive)
+    implementation(libs.bundles.room)
+
+    annotationProcessor(libs.roomCompiler)
+
+    ksp(libs.roomCompiler)
 
     testImplementation(libs.junit)
 
