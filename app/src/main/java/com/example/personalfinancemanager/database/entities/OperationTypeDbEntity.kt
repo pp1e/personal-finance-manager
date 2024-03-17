@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "operation_type",
-    indices = [Index("id")],
-    )
+    indices = [Index("id")]
+)
 data class OperationTypeDbEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(name = "name") val name: String,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "name") val name: String
 )

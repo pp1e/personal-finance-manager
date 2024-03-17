@@ -7,10 +7,10 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "balance",
-    indices = [Index("id")],
-    )
+    indices = [Index("id")]
+)
 data class BalanceDbEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "datetime") val datetime: String,
-    @ColumnInfo(name = "amount") val amount: Float,
+    @ColumnInfo(name = "amount") val amount: Float
 )

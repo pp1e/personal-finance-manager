@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -20,10 +21,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-//        ksp {
-//            arguments {arg("room.schemaLocation", "$projectDir/schemas")}
-//        }
     }
 
     buildTypes {

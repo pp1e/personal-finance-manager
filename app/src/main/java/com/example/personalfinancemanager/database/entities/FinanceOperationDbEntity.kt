@@ -21,12 +21,12 @@ import androidx.room.PrimaryKey
             childColumns = ["operation_type_id"]
         )
     ]
-    )
+)
 data class FinanceOperationDbEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "datetime") val datetime: String,
     @ColumnInfo(name = "message") val message: String,
     @ColumnInfo(name = "amount") val amount: Float,
     @ColumnInfo(name = "operation_category_id") val operationCategoryId: Long,
-    @ColumnInfo(name = "operation_type_id") val operationTypeId: Long,
-    )
+    @ColumnInfo(name = "operation_type_id") val operationTypeId: Long
+)

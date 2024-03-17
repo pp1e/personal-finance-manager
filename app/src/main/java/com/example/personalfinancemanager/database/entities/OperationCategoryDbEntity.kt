@@ -7,9 +7,10 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "operation_category",
-    indices = [Index("id")],
-    )
+    indices = [Index("id")]
+)
 data class OperationCategoryDbEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    @ColumnInfo(name = "name") val name: String,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(name = "frequency", defaultValue = "0") val frequency: Long = 0,
+    @ColumnInfo(name = "name") val name: String
 )
