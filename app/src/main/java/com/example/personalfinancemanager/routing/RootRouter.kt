@@ -9,6 +9,7 @@ import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.badoo.reaktive.base.Consumer
+import com.example.personalfinancemanager.components.history.HistoryComponent
 import com.example.personalfinancemanager.components.main.MainComponent
 import com.example.personalfinancemanager.components.newOperation.NewOperationComponent
 import com.example.personalfinancemanager.database.AppRepository
@@ -25,7 +26,11 @@ class RootRouter(
         ComponentContext,
         Consumer<NewOperationComponent.Output>,
         Long?
-    ) -> NewOperationComponent
+    ) -> NewOperationComponent,
+    private val historyComponent: (
+        ComponentContext,
+        Consumer<HistoryComponent.Output>
+    ) -> HistoryComponent
 ) : ComponentContext by componentContext {
 
     constructor(
@@ -49,6 +54,14 @@ class RootRouter(
                 output = output,
                 database = database,
                 categoryId = categoryId
+            )
+        },
+        historyComponent = { context, output ->
+            HistoryComponent(
+                componentContext = context,
+                storeFactory = storeFactory,
+                output = output,
+                database = database
             )
         }
     )
@@ -84,6 +97,12 @@ class RootRouter(
                     screenConfig.categoryId
                 )
             )
+            is ScreenConfig.History -> Child.History(
+                historyComponent(
+                    componentContext,
+                    Consumer(::onHistoryOutput)
+                )
+            )
         }
 
     private fun onMainOutput(output: MainComponent.Output): Unit =
@@ -91,7 +110,7 @@ class RootRouter(
             is MainComponent.Output.NewOperationTransit -> router.push(
                 ScreenConfig.NewOperation(output.categoryId)
             )
-            is MainComponent.Output.HistoryTransit -> router.push(ScreenConfig.Main)
+            is MainComponent.Output.HistoryTransit -> router.push(ScreenConfig.History)
             is MainComponent.Output.ChartTransit -> router.push(ScreenConfig.Main)
         }
 
@@ -100,9 +119,15 @@ class RootRouter(
             NewOperationComponent.Output.MainTransit -> router.pop()
         }
 
+    private fun onHistoryOutput(output: HistoryComponent.Output): Unit =
+        when (output) {
+            HistoryComponent.Output.MainTransit -> router.pop()
+        }
+
     sealed class Child {
         data class Main(val component: MainComponent) : Child()
         data class NewOperation(val component: NewOperationComponent) : Child()
+        data class History(val component: HistoryComponent) : Child()
     }
 
     @Serializable
@@ -112,5 +137,8 @@ class RootRouter(
 
         @Serializable
         data class NewOperation(val categoryId: Long?) : ScreenConfig()
+
+        @Serializable
+        data object History : ScreenConfig()
     }
 }

@@ -9,5 +9,5 @@ data class FinanceOperationTuple(
     @ColumnInfo(name = "message") val message: String,
     @ColumnInfo(name = "amount") val amount: Float,
     @ColumnInfo(name = "operation_category") val operationCategory: String,
-    @ColumnInfo(name = "operation_type") val operationType: String
+    @ColumnInfo(name = "operation_type_id") val operationTypeId: Long
 )

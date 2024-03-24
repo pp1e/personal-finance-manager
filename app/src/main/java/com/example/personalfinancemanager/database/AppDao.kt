@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.Flow
 interface AppDao {
     @Query(
         "SELECT finance_operation.id, finance_operation.amount, finance_operation.datetime, " +
-            "finance_operation.message, operation_type.name as operation_type, " +
+            "finance_operation.message, finance_operation.operation_type_id, " +
             "operation_category.name as operation_category FROM finance_operation " +
             "INNER JOIN operation_category ON " +
             "operation_category.id = finance_operation.operation_category_id " +
-            "INNER JOIN operation_type ON operation_type.id = finance_operation.operation_type_id;"
+            "ORDER BY finance_operation.datetime;"
     )
     fun getOperationsData(): Flow<List<FinanceOperationTuple>>
 

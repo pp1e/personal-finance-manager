@@ -18,4 +18,8 @@ object UiConstants {
     val SpinnerFontSize = 20.sp
     val RadioDividerHeight = 90.dp
     val BigButtonFontSize = 22.sp
+    val HistoryItemHeight = 80.dp
+    val HistoryAmountFontSize = 24.sp
+    val HistoryDividerSize = 4.dp
+    val HistoryCategoryFontSize = 16.sp
 }
