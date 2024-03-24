@@ -1,5 +1,6 @@
 package com.example.personalfinancemanager.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -25,13 +26,18 @@ interface AppDao {
     @Query(
         "SELECT id, name, frequency FROM operation_category  ORDER BY frequency DESC LIMIT :limit"
     )
-    fun getFrequencyCategories(limit: Long): Flow<List<OperationCategoryDbEntity>>
+    fun getFrequencyCategoriesWithLimit(limit: Long): Flow<List<OperationCategoryDbEntity>>
+
+    @Query(
+        "SELECT id, name, frequency FROM operation_category  ORDER BY frequency DESC"
+    )
+    fun getFrequencyCategories(): Flow<List<OperationCategoryDbEntity>>
 
     @Insert(entity = FinanceOperationDbEntity::class)
     fun insertFinanceOperation(financeOperation: FinanceOperationDbEntity)
 
     @Insert(entity = OperationCategoryDbEntity::class)
-    fun insertOperationCategory(operationCategory: OperationCategoryDbEntity)
+    fun insertOperationCategory(operationCategory: OperationCategoryDbEntity): Long
 
     @Insert(entity = OperationTypeDbEntity::class)
     fun insertOperationType(operationType: OperationTypeDbEntity)
@@ -44,4 +50,7 @@ interface AppDao {
 
     @Query("SELECT * FROM balance ORDER BY datetime LIMIT 1")
     fun getActualBalance(): Flow<BalanceDbEntity>
+
+    @Query("SELECT * FROM operation_category WHERE name = :name")
+    fun getOperationCategoryByName(name: String): LiveData<OperationCategoryDbEntity>
 }

@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PostAdd
-import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -60,6 +59,7 @@ fun ColumnScope.BottomMenu(
             MenuButton(
                 icon = Icons.AutoMirrored.Filled.ShowChart,
                 placeholder = "Chart",
+                modifier = buttonModifier,
                 onClicked = onChartClicked
             )
         }

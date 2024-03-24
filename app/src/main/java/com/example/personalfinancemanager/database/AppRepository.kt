@@ -9,6 +9,7 @@ import com.example.personalfinancemanager.database.entities.OperationTypeDbEntit
 import com.example.personalfinancemanager.database.tuples.FinanceOperationTuple
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
 
 class AppRepository(private val appDao: AppDao) {
 
@@ -24,9 +25,34 @@ class AppRepository(private val appDao: AppDao) {
         }
     }
 
-    suspend fun insertFinanceOperation(financeOperation: FinanceOperationDbEntity) {
+    suspend fun insertFinanceOperation(
+        category: String,
+        type: OperationType,
+        message: String,
+        amount: Float
+    ) {
         withContext(Dispatchers.IO) {
-            appDao.insertFinanceOperation(financeOperation)
+            val categoryDbEntity = appDao.getOperationCategoryByName(category).value
+            val categoryId: Long
+            if (categoryDbEntity == null) {
+                categoryId = appDao.insertOperationCategory(
+                    OperationCategoryDbEntity(
+                        name = category
+                    )
+                )
+            } else {
+                categoryId = categoryDbEntity.id
+            }
+
+            appDao.insertFinanceOperation(
+                FinanceOperationDbEntity(
+                    datetime = LocalDateTime.now().toString(),
+                    operationCategoryId = categoryId,
+                    operationTypeId = type.id,
+                    message = message,
+                    amount = amount
+                )
+            )
         }
     }
 
@@ -35,10 +61,16 @@ class AppRepository(private val appDao: AppDao) {
             .getOperationsData()
             .asObservable()
 
-    fun getOperationCategories(limit: Long): Observable<List<OperationCategoryDbEntity>> =
-        appDao
-            .getFrequencyCategories(limit)
-            .asObservable()
+    fun getOperationCategories(limit: Long? = null): Observable<List<OperationCategoryDbEntity>> =
+        if (limit == null) {
+            appDao
+                .getFrequencyCategories()
+                .asObservable()
+        } else {
+            appDao
+                .getFrequencyCategoriesWithLimit(limit)
+                .asObservable()
+        }
 
     fun getActualBalance(): Observable<BalanceDbEntity> =
         appDao

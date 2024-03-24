@@ -24,7 +24,7 @@ fun MenuButton(
     Column(
         Modifier.then(modifier)
             .fillMaxSize()
-            .clickable { onClicked }
+            .clickable { onClicked() }
     ) {
         Icon(
             modifier = Modifier

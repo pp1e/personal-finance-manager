@@ -4,11 +4,13 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
+import com.arkivanov.decompose.router.stack.pop
 import com.arkivanov.decompose.router.stack.push
 import com.arkivanov.decompose.value.Value
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.badoo.reaktive.base.Consumer
 import com.example.personalfinancemanager.components.main.MainComponent
+import com.example.personalfinancemanager.components.newOperation.NewOperationComponent
 import com.example.personalfinancemanager.database.AppRepository
 import com.example.personalfinancemanager.utils.Consumer
 import kotlinx.serialization.Serializable
@@ -18,7 +20,12 @@ class RootRouter(
     private val mainComponent: (
         ComponentContext,
         Consumer<MainComponent.Output>
-    ) -> MainComponent
+    ) -> MainComponent,
+    private val newOperationComponent: (
+        ComponentContext,
+        Consumer<NewOperationComponent.Output>,
+        Long?
+    ) -> NewOperationComponent
 ) : ComponentContext by componentContext {
 
     constructor(
@@ -27,12 +34,21 @@ class RootRouter(
         database: AppRepository
     ) : this(
         componentContext = componentContext,
-        mainComponent = { component, output ->
+        mainComponent = { context, output ->
             MainComponent(
-                componentContext = component,
+                componentContext = context,
                 storeFactory = storeFactory,
                 output = output,
                 database = database
+            )
+        },
+        newOperationComponent = { context, output, categoryId ->
+            NewOperationComponent(
+                componentContext = context,
+                storeFactory = storeFactory,
+                output = output,
+                database = database,
+                categoryId = categoryId
             )
         }
     )
@@ -61,22 +77,40 @@ class RootRouter(
                     Consumer(::onMainOutput)
                 )
             )
+            is ScreenConfig.NewOperation -> Child.NewOperation(
+                newOperationComponent(
+                    componentContext,
+                    Consumer(::onNewOperationOutput),
+                    screenConfig.categoryId
+                )
+            )
         }
 
     private fun onMainOutput(output: MainComponent.Output): Unit =
         when (output) {
-            is MainComponent.Output.NewOperationTransit -> router.push(ScreenConfig.Main)
+            is MainComponent.Output.NewOperationTransit -> router.push(
+                ScreenConfig.NewOperation(output.categoryId)
+            )
             is MainComponent.Output.HistoryTransit -> router.push(ScreenConfig.Main)
             is MainComponent.Output.ChartTransit -> router.push(ScreenConfig.Main)
         }
 
+    private fun onNewOperationOutput(output: NewOperationComponent.Output): Unit =
+        when (output) {
+            NewOperationComponent.Output.MainTransit -> router.pop()
+        }
+
     sealed class Child {
         data class Main(val component: MainComponent) : Child()
+        data class NewOperation(val component: NewOperationComponent) : Child()
     }
 
     @Serializable
     private sealed class ScreenConfig {
         @Serializable
         data object Main : ScreenConfig()
+
+        @Serializable
+        data class NewOperation(val categoryId: Long?) : ScreenConfig()
     }
 }

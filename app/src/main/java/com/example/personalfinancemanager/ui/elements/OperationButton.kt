@@ -7,22 +7,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import com.example.personalfinancemanager.database.entities.OperationCategoryDbEntity
 import com.example.personalfinancemanager.ui.constants.UiConstants
 
 @Composable
-fun CustomOperationButton(
-    text: String,
-    onClick: () -> Unit,
+fun CustomCategoryButton(
+    category: OperationCategoryDbEntity,
+    onClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Button(
         modifier = Modifier.then(modifier)
             .fillMaxWidth()
             .height(UiConstants.OperationButtonHeight),
-        onClick = onClick
+        onClick = { onClick(category.id) }
     ) {
         Text(
-            text = text,
+            text = category.name,
             textAlign = TextAlign.Center,
             fontSize = UiConstants.OperationButtonFontSize
         )

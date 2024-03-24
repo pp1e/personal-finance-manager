@@ -13,4 +13,9 @@ object UiConstants {
     val OperationButtonHeight = 80.dp
     val OperationButtonFontSize = 20.sp
     val AccountButtonDividerHeight = 40.dp
+    val SpinnerWidth = 120.dp
+    val SpinnerHeight = 70.dp
+    val SpinnerFontSize = 20.sp
+    val RadioDividerHeight = 90.dp
+    val BigButtonFontSize = 22.sp
 }
