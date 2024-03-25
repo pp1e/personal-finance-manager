@@ -1,4 +1,4 @@
-package com.example.personalfinancemanager.components.main
+package com.example.personalfinancemanager.components.chart
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
@@ -8,21 +8,20 @@ import com.arkivanov.mvikotlin.extensions.reaktive.ReaktiveExecutor
 import com.badoo.reaktive.observable.map
 import com.badoo.reaktive.observable.observeOn
 import com.badoo.reaktive.scheduler.mainScheduler
-import com.example.personalfinancemanager.components.main.MainStore.Intent
-import com.example.personalfinancemanager.components.main.MainStore.State
+import com.example.personalfinancemanager.components.chart.ChartStore.Intent
+import com.example.personalfinancemanager.components.chart.ChartStore.State
 import com.example.personalfinancemanager.database.AppRepository
-import com.example.personalfinancemanager.database.entities.OperationCategoryDbEntity
+import com.example.personalfinancemanager.database.entities.BalanceDbEntity
 
-internal class MainStoreProvider(
+internal class ChartStoreProvider(
     private val storeFactory: StoreFactory,
     private val database: AppRepository
 ) {
-
-    fun provide(): MainStore =
+    fun provide(): ChartStore =
         object :
-            MainStore,
+            ChartStore,
             Store<Intent, State, Nothing> by storeFactory.create(
-                name = "MainStore",
+                name = "ChartStore",
                 initialState = State(),
                 bootstrapper = SimpleBootstrapper(Unit),
                 executorFactory = ::ExecutorImpl,
@@ -30,28 +29,17 @@ internal class MainStoreProvider(
             ) {}
 
     private sealed class Msg {
-        data class FrequentCategoriesLoaded(
-            val frequentCategories: List<OperationCategoryDbEntity>
+        data class BalanceHistoryLoaded(
+            val operations: List<BalanceDbEntity>
         ) : Msg()
-        data class BalanceLoaded(val balance: Float) : Msg()
     }
 
     private inner class ExecutorImpl : ReaktiveExecutor<Intent, Unit, State, Msg, Nothing>() {
         override fun executeAction(action: Unit, getState: () -> State) {
             database
-                .getOperationCategories(10)
+                .getBalanceHistory()
                 .observeOn(mainScheduler)
-                .map(Msg::FrequentCategoriesLoaded)
-                .subscribeScoped(onNext = ::dispatch)
-
-            database
-                .getActualBalance()
-                .observeOn(mainScheduler)
-                .map {
-                    Msg.BalanceLoaded(
-                        it?.amount ?: getState().balanceRubles
-                    )
-                }
+                .map(Msg::BalanceHistoryLoaded)
                 .subscribeScoped(onNext = ::dispatch)
         }
     }
@@ -59,13 +47,7 @@ internal class MainStoreProvider(
     private object ReducerImpl : Reducer<State, Msg> {
         override fun State.reduce(msg: Msg): State =
             when (msg) {
-                is Msg.FrequentCategoriesLoaded -> copy(
-                    frequentCategories = msg.frequentCategories
-                )
-                is Msg.BalanceLoaded -> copy(
-                    balanceRubles = msg.balance,
-                    balanceDollars = -1f
-                )
+                is Msg.BalanceHistoryLoaded -> copy(balanceHistory = msg.operations)
             }
     }
 }

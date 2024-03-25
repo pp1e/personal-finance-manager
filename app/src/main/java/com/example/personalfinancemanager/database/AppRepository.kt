@@ -32,7 +32,7 @@ class AppRepository(private val appDao: AppDao) {
         amount: Float
     ) {
         withContext(Dispatchers.IO) {
-            val categoryDbEntity = appDao.getOperationCategoryByName(category).value
+            val categoryDbEntity = appDao.getOperationCategoryByName(category)
             val categoryId: Long
             if (categoryDbEntity == null) {
                 categoryId = appDao.insertOperationCategory(
@@ -53,6 +53,17 @@ class AppRepository(private val appDao: AppDao) {
                     amount = amount
                 )
             )
+
+            appDao.increaseCategoryFrequency(
+                categoryId
+            )
+
+            appDao.updateBalance(
+                when(type) {
+                    OperationType.REFILL -> amount
+                    OperationType.WITHDRAWAL -> -amount
+                }
+            )
         }
     }
 
@@ -72,8 +83,13 @@ class AppRepository(private val appDao: AppDao) {
                 .asObservable()
         }
 
-    fun getActualBalance(): Observable<BalanceDbEntity> =
+    fun getActualBalance(): Observable<BalanceDbEntity?> =
         appDao
             .getActualBalance()
+            .asObservable()
+
+    fun getBalanceHistory(): Observable<List<BalanceDbEntity>> =
+        appDao
+            .getBalanceHistory()
             .asObservable()
 }

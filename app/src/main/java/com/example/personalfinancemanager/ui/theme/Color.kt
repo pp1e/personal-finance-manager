@@ -5,9 +5,10 @@ import androidx.compose.ui.graphics.Color
 // val Purple80 = Color(0xFF34C6CD)
 // val PurpleGrey80 = Color(0xFF5DC8CD)
 // val Pink80 = Color(0xFF74F9FF)
-val Purple80 = Color(0xAA0D375C)
+val DarkPrimary = Color(0xAA0D375C)
 val PurpleGrey80 = Color(0xAA183045)
 val Pink80 = Color(0xFF05223D)
+val NeutralVariant30 = Color(red = 73, green = 69, blue = 79)
 //
 
 // val Purple80 = Color(0xFF6650a4)

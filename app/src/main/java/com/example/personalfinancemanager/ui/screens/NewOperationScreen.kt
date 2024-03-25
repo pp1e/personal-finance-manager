@@ -73,7 +73,8 @@ fun NewOperationScreen(component: NewOperationComponent) {
                 value = model.amount,
                 onValueChanged = component::onAmountChanged,
                 label = "Amount",
-                modifier = elementModifier
+                modifier = elementModifier,
+                minValue = 0f,
             )
         }
 

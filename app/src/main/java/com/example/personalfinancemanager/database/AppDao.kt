@@ -1,6 +1,5 @@
 package com.example.personalfinancemanager.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -10,6 +9,7 @@ import com.example.personalfinancemanager.database.entities.OperationCategoryDbE
 import com.example.personalfinancemanager.database.entities.OperationTypeDbEntity
 import com.example.personalfinancemanager.database.tuples.FinanceOperationTuple
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
 
 @Dao
 interface AppDao {
@@ -19,7 +19,7 @@ interface AppDao {
             "operation_category.name as operation_category FROM finance_operation " +
             "INNER JOIN operation_category ON " +
             "operation_category.id = finance_operation.operation_category_id " +
-            "ORDER BY finance_operation.datetime;"
+            "ORDER BY finance_operation.datetime DESC;"
     )
     fun getOperationsData(): Flow<List<FinanceOperationTuple>>
 
@@ -48,9 +48,16 @@ interface AppDao {
     @Query("UPDATE operation_category SET frequency = frequency + 1 WHERE id = :id")
     fun increaseCategoryFrequency(id: Long)
 
-    @Query("SELECT * FROM balance ORDER BY datetime LIMIT 1")
-    fun getActualBalance(): Flow<BalanceDbEntity>
+    @Query("SELECT * FROM balance ORDER BY datetime DESC LIMIT 1")
+    fun getActualBalance(): Flow<BalanceDbEntity?>
 
     @Query("SELECT * FROM operation_category WHERE name = :name")
-    fun getOperationCategoryByName(name: String): LiveData<OperationCategoryDbEntity>
+    fun getOperationCategoryByName(name: String): OperationCategoryDbEntity?
+
+    @Query("INSERT INTO balance (datetime, amount) VALUES (:datetime," +
+            " (SELECT amount FROM balance ORDER BY datetime DESC LIMIT 1) + :amount);")
+    fun updateBalance(amount: Float, datetime: String = LocalDateTime.now().toString())
+
+    @Query("SELECT * FROM balance")
+    fun getBalanceHistory(): Flow<List<BalanceDbEntity>>
 }

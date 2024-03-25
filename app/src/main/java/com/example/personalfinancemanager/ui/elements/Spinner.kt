@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import com.example.personalfinancemanager.ui.constants.UiConstants
 
 @Composable
@@ -51,7 +54,9 @@ fun Spinner(
                             currentValue = value,
                             fieldValue = fieldValue,
                             onValueChanged = onValueChanged,
-                            onFieldValueChanged = onFieldValueChanged
+                            onFieldValueChanged = onFieldValueChanged,
+                            maxValue = maxValue,
+                            minValue = minValue,
                         )
                     }
                 },
@@ -64,8 +69,18 @@ fun Spinner(
             label = {
                 Text(text = label)
             },
-            placeholder = { Text(text = placeholder) }
-
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {
+                changeValue(
+                    currentValue = value,
+                    fieldValue = fieldValue,
+                    onValueChanged = onValueChanged,
+                    onFieldValueChanged = onFieldValueChanged,
+                    maxValue = maxValue,
+                    minValue = minValue,
+                )
+            }),
+            placeholder = { Text(text = placeholder) },
         )
         Column {
             Button(
@@ -130,10 +145,12 @@ fun changeValue(
     currentValue: Float,
     fieldValue: String,
     onValueChanged: (Float) -> Unit,
-    onFieldValueChanged: (String) -> Unit
+    onFieldValueChanged: (String) -> Unit,
+    maxValue: Float,
+    minValue: Float,
 ) {
     val newValue = fieldValue.toFloatOrNull()
-    if (newValue == null) {
+    if ((newValue == null) || ((newValue <= maxValue) or (newValue >= minValue))) {
         onFieldValueChanged(currentValue.toString())
     } else {
         onValueChanged(newValue)

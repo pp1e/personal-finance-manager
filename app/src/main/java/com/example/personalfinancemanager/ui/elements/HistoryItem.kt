@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.MoneyOff
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -73,7 +74,6 @@ fun HistoryItem(
                         .align(Alignment.CenterVertically)
                         .padding(
                             start = UiConstants.DefaultPadding / 2
-//                            end = UiConstants.DefaultPadding
                         ),
                     text = "${determineSing(operation)}${operation.amount}₽",
                     fontWeight = FontWeight.Bold,
