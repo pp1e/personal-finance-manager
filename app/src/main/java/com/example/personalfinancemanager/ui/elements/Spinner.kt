@@ -150,7 +150,7 @@ fun changeValue(
     minValue: Float,
 ) {
     val newValue = fieldValue.toFloatOrNull()
-    if ((newValue == null) || ((newValue <= maxValue) or (newValue >= minValue))) {
+    if ((newValue == null) || ((newValue > maxValue) or (newValue < minValue))) {
         onFieldValueChanged(currentValue.toString())
     } else {
         onValueChanged(newValue)
